@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>케어유 - 프리미엄 재가복지 매칭 플랫폼</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',   /* Royal Blue */
+                        primaryDark: '#1E40AF',
+                        secondary: '#F1F5F9', /* Slate-100 */
+                        textMain: '#1E293B',  /* Slate-800 */
+                        textSub: '#64748B',   /* Slate-500 */
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pop-in': 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' },
+                        },
+                        slideUp: {
+                            'from': { opacity: '0', transform: 'translateY(20px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.9)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F8FAFC; color: #1E293B; }
+        
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; opacity: 0; visibility: hidden; }
+        .modal.active { opacity: 1; visibility: visible; }
+        
+        .hover-card { transition: all 0.3s ease; border: 1px solid transparent; }
+        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.2); border-color: #BFDBFE; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 1. 헤더 -->
+    <header class="fixed w-full top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 h-16">
+        <div class="container mx-auto px-4 h-full flex justify-between items-center">
+            <a href="javascript:void(0)" onclick="showSection('main')" class="flex items-center gap-2 group">
+                <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white font-bold shadow-md transition-transform group-hover:scale-105">C</div>
+                <span class="text-xl font-bold tracking-tight text-slate-800">CareU</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-500">
+                <a href="javascript:void(0)" onclick="showSection('main')" class="hover:text-primary transition">서비스안내</a>
+                <a href="javascript:void(0)" onclick="openAddressModal()" class="hover:text-primary transition">전문가찾기</a>
+                <a href="#" class="hover:text-primary transition">이용후기</a>
+                <a href="#" class="hover:text-primary transition">고객센터</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <span class="hidden lg:block font-bold text-primary text-sm mr-2">📞 1544-0000</span>
+                <button onclick="showMyPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-bold transition flex items-center gap-2 border border-slate-200">
+                    <i class="fas fa-user-circle"></i> 마이페이지
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. 메인 섹션 -->
+    <main id="main-section" class="pt-20 animate-fade-in">
+        
+        <!-- 히어로 배너 -->
+        <section class="container mx-auto px-4 mb-16">
+            <div class="relative w-full h-[480px] rounded-3xl overflow-hidden shadow-2xl group bg-slate-900">
+                <div id="hero-slider" class="absolute inset-0">
+                    <!-- [수정] 안정적인 Unsplash 이미지 URL로 교체 -->
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] group-hover:scale-105" 
+                         style="background-image: url(' https://www.pexels.com/ko-kr/photo/3768131/');">
+                    </div>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/40 to-transparent"></div>
+                <div class="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 max-w-3xl">
+                    <span class="inline-block bg-blue-500/20 backdrop-blur-md border border-blue-400/30 text-blue-50 text-xs font-bold px-3 py-1 rounded-full mb-6 w-fit animate-slide-up">
+                        보건복지부 지정 최우수 기관
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight animate-slide-up" style="animation-delay: 0.1s;">
+                        부모님을 위한<br>
+                        <span class="text-blue-400">가장 투명한</span> 동행
+                    </h1>
+                    <p class="text-slate-200 mb-10 text-lg font-light max-w-lg animate-slide-up" style="animation-delay: 0.2s;">
+                        내 주변 상위 1% 요양 전문가를 매칭해드립니다.<br>
+                        안심하고 맡길 수 있는 케어유와 함께하세요.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 animate-slide-up" style="animation-delay: 0.3s;">
+                        <button onclick="openAddressModal()" class="bg-primary hover:bg-primaryDark text-white font-bold py-4 px-8 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <i class="fas fa-search"></i> 전문가 찾기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 서비스 카드 -->
+        <section class="container mx-auto px-4 mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">어떤 돌봄이 필요하신가요?</h3>
+                <p class="text-slate-500">서비스를 선택하시면 상세 내용을 확인하고 전문가를 매칭할 수 있습니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 방문요양 -->
+                <div onclick="openServiceDetail('care')" class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover-card cursor-pointer group text-center relative overflow-hidden">
+                    <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary text-3xl group-hover:scale-110 transition duration-300">
+                        <i class="fas fa-user-nurse"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 text-slate-800">방문요양</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">국가공인 요양보호사가 댁으로 방문하여<br>신체활동 및 가사활동을 지원합니다.</p>
+                    <span class="inline-block text-primary text-sm font-bold border-b-2 border-transparent group-hover:border-primary transition">상세보기 &rarr;</span>
+                </div>
+                <!-- 방문목욕 -->
+                <div onclick="openServiceDetail('bath')" class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover-card cursor-pointer group text-center relative overflow-hidden">
+                    <div class="w-20 h-20 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-teal-600 text-3xl group-hover:scale-110 transition duration-300">
+                        <i class="fas fa-bath"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 text-slate-800">방문목욕</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">전용 목욕 차량과 전문 장비를 갖춘<br>2명의 요양보호사가 방문합니다.</p>
+                    <span class="inline-block text-teal-600 text-sm font-bold border-b-2 border-transparent group-hover:border-teal-600 transition">상세보기 &rarr;</span>
+                </div>
+                <!-- 일상지원 -->
+                <div onclick="openServiceDetail('life')" class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover-card cursor-pointer group text-center relative overflow-hidden">
+                    <div class="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600 text-3xl group-hover:scale-110 transition duration-300">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 text-slate-800">일상지원</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">병원동행, 산책, 말벗 등 어르신의<br>외로움을 덜어드리고 일상을 돕습니다.</p>
+                    <span class="inline-block text-indigo-600 text-sm font-bold border-b-2 border-transparent group-hover:border-indigo-600 transition">상세보기 &rarr;</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 파트너 센터 & 공지사항 -->
+        <section class="container mx-auto px-4 mb-24">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 파트너 센터 -->
+                <div class="lg:col-span-2">
+                    <div class="flex justify-between items-end mb-6">
+                        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-building text-primary"></i> 검증된 파트너 센터
+                        </h3>
+                        <span class="text-xs text-slate-400">클릭하여 센터 장점을 확인하세요</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div onclick="openCenterDetail('center1')" class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-200 hover:shadow-md transition cursor-pointer">
+                            <div class="w-16 h-16 rounded-xl bg-slate-200 bg-cover flex-shrink-0" style="background-image: url('https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80')"></div>
+                            <div>
+                                <h5 class="font-bold text-slate-800">행복케어센터</h5>
+                                <div class="flex gap-2 mt-1">
+                                    <span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded font-bold">A등급</span>
+                                    <span class="text-slate-400 text-xs">서울 강남구</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div onclick="openCenterDetail('center2')" class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-200 hover:shadow-md transition cursor-pointer">
+                            <div class="w-16 h-16 rounded-xl bg-slate-200 bg-cover flex-shrink-0" style="background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80')"></div>
+                            <div>
+                                <h5 class="font-bold text-slate-800">사랑방문요양</h5>
+                                <div class="flex gap-2 mt-1">
+                                    <span class="bg-green-50 text-green-600 text-[10px] px-2 py-0.5 rounded font-bold">최우수</span>
+                                    <span class="text-slate-400 text-xs">서울 서초구</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 공지사항 -->
+                <div>
+                    <div class="flex justify-between items-end mb-6">
+                        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-bullhorn text-primary"></i> 공지사항
+                        </h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm h-full">
+                        <ul class="space-y-4">
+                            <li class="border-b border-slate-50 pb-3 last:border-0">
+                                <a href="#" class="block hover:text-primary transition group">
+                                    <span class="text-blue-600 bg-blue-50 text-[10px] font-bold px-2 py-0.5 rounded mb-1 inline-block">공지</span>
+                                    <p class="text-sm text-slate-600 truncate group-hover:text-primary">2024년 장기요양급여 수가 변경 안내</p>
+                                </a>
+                            </li>
+                            <li class="border-b border-slate-50 pb-3 last:border-0">
+                                <a href="#" class="block hover:text-primary transition group">
+                                    <span class="text-slate-500 bg-slate-100 text-[10px] font-bold px-2 py-0.5 rounded mb-1 inline-block">건강</span>
+                                    <p class="text-sm text-slate-600 truncate group-hover:text-primary">환절기 어르신 호흡기 관리법</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="block hover:text-primary transition group">
+                                    <span class="text-slate-500 bg-slate-100 text-[10px] font-bold px-2 py-0.5 rounded mb-1 inline-block">소식</span>
+                                    <p class="text-sm text-slate-600 truncate group-hover:text-primary">우수 요양보호사 표창 수여식</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [NEW] 차별점 섹션 (메인페이지 맨 아래) -->
+        <section class="bg-white py-20 border-t border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <span class="text-primary font-bold text-sm tracking-wider uppercase mb-2 block">Why CareU</span>
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">왜 <span class="text-primary">케어유</span>여야 하나요?</h3>
+                    <p class="text-slate-500 mt-4 text-lg">다른 곳과는 차원이 다른 안심 케어 서비스를 경험해보세요.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 차별점 1 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition duration-300">
+                            <i class="fas fa-certificate text-3xl text-primary group-hover:text-white transition"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-3">엄격한 신원 검증</h4>
+                        <p class="text-slate-500 leading-relaxed px-4">
+                            범죄경력 조회, 인성 면접, 전문성 테스트를<br>통과한 상위 10% 전문가만 매칭합니다.
+                        </p>
+                    </div>
+                    <!-- 차별점 2 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition duration-300">
+                            <i class="fas fa-mobile-alt text-3xl text-primary group-hover:text-white transition"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-3">실시간 돌봄 모니터링</h4>
+                        <p class="text-slate-500 leading-relaxed px-4">
+                            전용 앱을 통해 돌봄 시작과 종료,<br>특이사항을 실시간으로 공유해드립니다.
+                        </p>
+                    </div>
+                    <!-- 차별점 3 -->
+                    <div class="text-center group">
+                        <div class="w-20 h-20 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition duration-300">
+                            <i class="fas fa-shield-alt text-3xl text-primary group-hover:text-white transition"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-3">업계 최고 배상책임보험</h4>
+                        <p class="text-slate-500 leading-relaxed px-4">
+                            돌봄 중 발생할 수 있는 만약의 사고까지<br>최대 1억원 한도로 든든하게 보장합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 3. 서비스 상세 페이지 (Hidden) -->
+    <section id="detail-section" class="hidden pt-24 pb-20 animate-fade-in min-h-screen">
+        <div class="container mx-auto px-4">
+            <button onclick="showSection('main')" class="mb-6 text-slate-400 hover:text-primary font-bold flex items-center gap-2 transition">
+                <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+            </button>
+            <div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+                <div class="relative h-72 md:h-96">
+                    <img id="detail-img" src="" alt="서비스 이미지" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-8 md:p-12">
+                        <div>
+                            <span class="text-blue-300 font-bold tracking-wider text-sm uppercase mb-2 block">Premium Service</span>
+                            <h2 id="detail-title" class="text-3xl md:text-5xl font-bold text-white"></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div class="lg:col-span-2">
+                        <h4 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                            <i class="fas fa-info-circle text-primary"></i> 서비스 상세 소개
+                        </h4>
+                        <p id="detail-desc" class="text-slate-600 leading-relaxed text-lg mb-8"></p>
+                        <h5 class="font-bold text-slate-800 mb-4">주요 케어 내용</h5>
+                        <ul id="detail-list" class="space-y-3"></ul>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 sticky top-24 text-center">
+                            <h4 class="text-xl font-bold text-slate-800 mb-2">이 서비스가 필요하신가요?</h4>
+                            <p class="text-slate-500 mb-8 text-sm">주소를 입력하시면 근처의 검증된 전문가를 바로 찾아드립니다.</p>
+                            <button onclick="openAddressModal()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                                <i class="fas fa-search"></i> 전문가 매칭하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [NEW] 센터 상세 페이지 (Hidden) -->
+    <section id="center-detail-section" class="hidden pt-24 pb-20 animate-fade-in min-h-screen">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <button onclick="showSection('main')" class="mb-6 text-slate-400 hover:text-primary font-bold flex items-center gap-2 transition">
+                <i class="fas fa-arrow-left"></i> 홈으로 돌아가기
+            </button>
+            
+            <!-- 센터 히어로 -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-10">
+                <div class="relative h-80">
+                    <div id="center-hero-img" class="absolute inset-0 bg-cover bg-center"></div>
+                    <div class="absolute inset-0 bg-slate-900/50"></div>
+                    <div class="absolute bottom-0 left-0 p-8 md:p-12 text-white">
+                        <span id="center-grade" class="bg-primary text-white text-sm font-bold px-3 py-1 rounded-full mb-3 inline-block">A등급</span>
+                        <h2 id="center-name" class="text-4xl font-bold mb-2">센터명</h2>
+                        <p id="center-location" class="text-blue-100 flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> <span>위치</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 센터 장점 -->
+                <div class="md:col-span-2 space-y-8">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-6 border-b pb-4">이 센터만의 특별한 장점</h3>
+                        <ul id="center-advantages" class="space-y-6">
+                            <!-- JS 주입 -->
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4">센터 시설 미리보기</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="h-40 bg-slate-100 rounded-xl bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');"></div>
+                            <div class="h-40 bg-slate-100 rounded-xl bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문의하기 -->
+                <div class="md:col-span-1">
+                    <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 sticky top-24">
+                        <h4 class="text-xl font-bold text-slate-800 mb-4">상담이 필요하신가요?</h4>
+                        <p class="text-slate-500 mb-6 text-sm">전문 사회복지사가 친절하게 안내해드립니다.</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="alert('전화 연결 중...')" class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-phone-alt"></i> 전화 상담
+                            </button>
+                            <button onclick="alert('채팅 상담 연결 중...')" class="w-full bg-white border border-slate-300 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-50 transition flex items-center justify-center gap-2">
+                                <i class="fas fa-comment"></i> 채팅 상담
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 마이페이지 (Hidden) -->
+    <section id="mypage-section" class="hidden pt-24 pb-20 animate-fade-in min-h-screen">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="flex justify-between items-end mb-8 border-b border-slate-200 pb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800">마이페이지</h2>
+                    <p class="text-slate-500 mt-2">서비스 이용 현황입니다.</p>
+                </div>
+                <button onclick="showSection('main')" class="text-sm font-bold text-slate-400 hover:text-primary"><i class="fas fa-home"></i> 홈으로</button>
+            </div>
+            <div id="mypage-content">
+                <div id="empty-state" class="bg-white p-20 rounded-3xl border border-dashed border-slate-300 text-center">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <i class="fas fa-clipboard-list text-3xl"></i>
+                    </div>
+                    <p class="text-slate-400 font-medium">현재 신청하신 서비스 내역이 없습니다.</p>
+                    <button onclick="showSection('main')" class="text-primary font-bold hover:underline mt-4">서비스 둘러보기</button>
+                </div>
+                <div id="matched-card" class="hidden bg-white p-8 rounded-2xl shadow-sm border border-blue-100 flex flex-col md:flex-row gap-8 relative overflow-hidden animate-pop-in">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
+                    <div class="w-28 h-28 rounded-2xl bg-slate-200 bg-cover flex-shrink-0 shadow-inner" id="matched-img"></div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded mb-2 inline-block" id="matched-service-badge">서비스명</span>
+                                <h4 class="text-2xl font-bold text-slate-800" id="matched-expert-name">전문가 이름</h4>
+                            </div>
+                            <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full border border-green-200">매칭 신청 완료</span>
+                        </div>
+                        <p class="text-slate-500 text-sm mb-6" id="matched-center-name">센터명</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-3 rounded-lg text-sm text-slate-600 border border-slate-100 flex items-center">
+                                <i class="fas fa-map-marker-alt text-slate-400 mr-3 w-4 text-center"></i> <span id="matched-address">주소</span>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-lg text-sm text-slate-600 border border-slate-100 flex items-center">
+                                <i class="fas fa-clock text-slate-400 mr-3 w-4 text-center"></i> <span>센터 확인 중 (예상: 10분)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [MODAL] 주소 입력, 전문가 리스트, 상세, 성공 모달 등은 기존과 동일 -->
+    <div id="address-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 relative">
+            <button onclick="closeModal('address-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800"><i class="fas fa-times text-lg"></i></button>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-primary text-2xl"><i class="fas fa-map-marked-alt"></i></div>
+                <h3 class="text-xl font-bold text-slate-800">어디로 모실까요?</h3>
+                <p class="text-slate-500 text-sm mt-2">정확한 매칭을 위해 주소를 입력해주세요.</p>
+            </div>
+            <input type="text" id="input-address" class="w-full pl-4 pr-4 py-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary shadow-sm mb-4 text-lg" placeholder="예: 서울 강남구 역삼동">
+            <button onclick="searchExperts()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-4 rounded-xl transition shadow-lg text-lg">주변 전문가 찾기</button>
+        </div>
+    </div>
+
+    <!-- 전문가 리스트 -->
+    <div id="expert-list-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+        <div class="bg-white w-full max-w-lg h-[80vh] rounded-3xl shadow-2xl flex flex-col relative overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h3 class="font-bold text-lg text-slate-800">추천 전문가</h3>
+                <button onclick="closeModal('expert-list-modal')" class="text-slate-400 hover:text-slate-800"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="flex-grow overflow-y-auto p-6 bg-slate-50 custom-scroll">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm text-slate-500">위치: <span id="list-address" class="font-bold text-primary"></span></span>
+                    <span class="text-xs bg-white border px-2 py-1 rounded text-slate-500">2명 매칭됨</span>
+                </div>
+                <div class="space-y-4">
+                    <div onclick="showExpertDetail(1)" class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-300 hover:shadow-md cursor-pointer transition flex gap-5 items-start group">
+                        <div class="w-16 h-16 rounded-xl bg-slate-200 bg-cover flex-shrink-0" style="background-image: url('https://randomuser.me/api/portraits/women/65.jpg')"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-slate-800 text-lg">김명자 요양보호사</h4>
+                            <p class="text-xs text-slate-500 mb-2">행복케어센터 | 경력 10년</p>
+                            <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded">치매전문</span>
+                        </div>
+                    </div>
+                    <div onclick="showExpertDetail(2)" class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-300 hover:shadow-md cursor-pointer transition flex gap-5 items-start group">
+                        <div class="w-16 h-16 rounded-xl bg-slate-200 bg-cover flex-shrink-0" style="background-image: url('https://randomuser.me/api/portraits/women/42.jpg')"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-slate-800 text-lg">이영희 요양보호사</h4>
+                            <p class="text-xs text-slate-500 mb-2">사랑방문요양 | 경력 5년</p>
+                            <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded">차량소지</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 전문가 상세 -->
+    <div id="expert-detail-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+        <div class="bg-white w-full md:w-[500px] h-[85vh] md:rounded-3xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col relative animate-slide-up">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                <button onclick="backToExpertList()" class="text-slate-400 hover:text-slate-800"><i class="fas fa-arrow-left text-lg"></i></button>
+                <h3 class="font-bold text-lg text-slate-800">전문가 프로필</h3>
+                <button onclick="closeModal('expert-detail-modal')" class="text-slate-400 hover:text-slate-800"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="flex-grow overflow-y-auto p-0 bg-white custom-scroll">
+                <div class="p-8 text-center bg-slate-50 border-b border-slate-100">
+                    <div class="relative w-28 h-28 mx-auto mb-4">
+                        <div id="exp-detail-img" class="w-full h-full rounded-full bg-slate-200 bg-cover border-4 border-white shadow-lg"></div>
+                        <div class="absolute bottom-0 right-0 bg-green-500 text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-white shadow-sm"><i class="fas fa-check text-xs"></i></div>
+                    </div>
+                    <h4 id="exp-detail-name" class="text-2xl font-bold text-slate-800 mb-1"></h4>
+                    <p id="exp-detail-center" class="text-sm text-slate-500 mb-4"></p>
+                    <div class="flex justify-center gap-2">
+                        <span class="bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-bold border border-blue-100">신원검증 완료</span>
+                        <span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold border border-orange-100">평점 4.9</span>
+                    </div>
+                </div>
+                <div class="p-8 space-y-8">
+                    <div>
+                        <h5 class="font-bold text-slate-800 mb-3 text-sm uppercase text-slate-400">한줄 소개</h5>
+                        <p id="exp-detail-intro" class="text-slate-600 text-lg font-medium leading-relaxed italic"></p>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-slate-800 mb-3 text-sm uppercase text-slate-400">보유 자격</h5>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100"><i class="fas fa-certificate text-green-500 mr-3 w-5 text-center"></i> 요양보호사 1급</li>
+                            <li class="flex items-center text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100"><i class="fas fa-brain text-green-500 mr-3 w-5 text-center"></i> 치매 전문 교육 이수</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 bg-white border-t border-slate-100">
+                <button onclick="requestMatching()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 text-lg">이 전문가에게 의뢰하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 성공 모달 -->
+    <div id="success-modal" class="modal fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center relative animate-pop-in">
+            <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                <div class="absolute inset-0 border-4 border-green-100 rounded-full animate-ping opacity-75"></div>
+                <i class="fas fa-check text-5xl text-green-500 relative z-10"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-3">매칭 신청 완료!</h3>
+            <p class="text-slate-500 text-sm mb-8 leading-relaxed">선택하신 전문가에게 의뢰가 전달되었습니다.<br>담당 센터에서 10분 내로 연락드립니다.</p>
+            <button onclick="goToMyPage()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-xl transition shadow-lg">신청 내역 확인하기</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-10 mt-auto">
+        <div class="container mx-auto px-4 text-center text-sm text-slate-400">
+            <p class="mb-2 text-slate-600 font-bold">CareU (케어유)</p>
+            <p>대표: 홍길동 | 사업자번호: 123-45-67890 | 주소: 서울시 강남구 테헤란로</p>
+            <p class="mt-2">Copyright © 2024 CareU. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 스크립트 -->
+    <script>
+        // --- 데이터 ---
+        const services = {
+            'care': { title: '방문요양', icon: 'fa-user-nurse', img: 'https://images.unsplash.com/photo-1584515933487-779824d29309?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80', desc: '국가공인 요양보호사가 어르신 댁으로 정기적으로 방문하여 신체활동 및 일상생활을 지원합니다.', list: ['식사 보조 및 복약 지도', '관절 구축 예방 마사지', '청소, 세탁 등 주변 정돈'] },
+            'bath': { title: '방문목욕', icon: 'fa-bath', img: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80', desc: '거동이 불편하여 가정 내 목욕이 어려운 어르신을 위해 목욕 설비를 갖춘 전용 차량과 전문 요양보호사 2명이 방문합니다.', list: ['목욕 전후 바이탈 체크', '전용 이동식 욕조 사용', '미끄럼 방지 등 안전 관리'] },
+            'life': { title: '일상지원', icon: 'fa-hands-helping', img: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80', desc: '병원 진료 동행, 관공서 업무 보조, 산책 동행 등 어르신의 사회 활동을 지원하고 말벗이 되어 드립니다.', list: ['대학병원/동네의원 병원 동행', '은행/관공서 업무 보조', '근처 공원 산책 및 운동 보조'] }
+        };
+
+        const experts = {
+            1: { name: '김명자', center: '행복케어센터', img: 'https://randomuser.me/api/portraits/women/65.jpg', intro: '20년 경력의 노하우로 어르신의 건강과 마음까지 케어합니다. 치매 어르신 돌봄 경험이 풍부합니다.' },
+            2: { name: '이영희', center: '사랑방문요양', img: 'https://randomuser.me/api/portraits/women/42.jpg', intro: '밝고 긍정적인 에너지로 어르신께 활력을 드립니다. 자차 보유로 병원 동행이 수월합니다.' }
+        };
+
+        const centers = {
+            'center1': { name: '행복케어센터', grade: 'A등급', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80', advantages: ['치매 전문 교육 이수자 100%', '매월 1회 방문 간호 서비스 제공', '보호자 안심 알림 서비스'] },
+            'center2': { name: '사랑방문요양', grade: '최우수', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80', advantages: ['목욕 전용 차량 보유', '병원 동행 전문 인력 배치', '주말/공휴일 긴급 돌봄 지원'] }
+        };
+
+        let currentServiceKey = 'care';
+        let userAddress = '';
+        let selectedExpertId = null;
+        let matchedData = null;
+
+        // --- 화면 전환 ---
+        function showSection(id) {
+            ['main-section', 'detail-section', 'mypage-section', 'center-detail-section'].forEach(sec => {
+                document.getElementById(sec).classList.add('hidden');
+            });
+            document.getElementById(id + '-section').classList.remove('hidden');
+            if (id === 'mypage') renderMyPage();
+            window.scrollTo(0,0);
+        }
+
+        // --- 서비스 상세 ---
+        function openServiceDetail(key) {
+            currentServiceKey = key;
+            const data = services[key];
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-desc').innerText = data.desc;
+            document.getElementById('detail-img').src = data.img;
+            
+            const list = document.getElementById('detail-list');
+            list.innerHTML = '';
+            data.list.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100';
+                li.innerHTML = `<i class="fas fa-check-circle text-green-500 mr-3"></i> ${item}`;
+                list.appendChild(li);
+            });
+            showSection('detail');
+        }
+
+        // --- 전문가 매칭 ---
+        function openAddressModal() { document.getElementById('address-modal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function searchExperts() {
+            const addr = document.getElementById('input-address').value;
+            if(!addr) { alert('주소를 입력해주세요.'); return; }
+            userAddress = addr;
+            closeModal('address-modal');
+            document.getElementById('list-address').innerText = addr;
+            document.getElementById('expert-list-modal').classList.add('active');
+        }
+
+        function showExpertDetail(id) {
+            selectedExpertId = id;
+            const expert = experts[id];
+            document.getElementById('exp-detail-img').style.backgroundImage = `url('${expert.img}')`;
+            document.getElementById('exp-detail-name').innerText = expert.name + ' 요양보호사';
+            document.getElementById('exp-detail-center').innerText = expert.center;
+            document.getElementById('exp-detail-intro').innerText = `"${expert.intro}"`;
+            closeModal('expert-list-modal');
+            document.getElementById('expert-detail-modal').classList.add('active');
+        }
+
+        function backToExpertList() {
+            closeModal('expert-detail-modal');
+            document.getElementById('expert-list-modal').classList.add('active');
+        }
+
+        function requestMatching() {
+            matchedData = { service: services[currentServiceKey], expert: experts[selectedExpertId], address: userAddress };
+            closeModal('expert-detail-modal');
+            document.getElementById('success-modal').classList.add('active');
+        }
+
+        function goToMyPage() {
+            closeModal('success-modal');
+            showSection('mypage');
+        }
+
+        function renderMyPage() {
+            const emptyState = document.getElementById('empty-state');
+            const matchedCard = document.getElementById('matched-card');
+            if (matchedData) {
+                emptyState.classList.add('hidden');
+                matchedCard.classList.remove('hidden');
+                matchedCard.classList.add('flex');
+                document.getElementById('matched-service-badge').innerText = matchedData.service.title;
+                document.getElementById('matched-expert-name').innerText = matchedData.expert.name + ' 요양보호사';
+                document.getElementById('matched-center-name').innerText = matchedData.expert.center;
+                document.getElementById('matched-address').innerText = matchedData.address;
+                document.getElementById('matched-img').style.backgroundImage = `url('${matchedData.expert.img}')`;
+            } else {
+                emptyState.classList.remove('hidden');
+                matchedCard.classList.add('hidden');
+                matchedCard.classList.remove('flex');
+            }
+        }
+
+        // --- 센터 상세 ---
+        function openCenterDetail(centerId) {
+            const data = centers[centerId];
+            document.getElementById('center-hero-img').style.backgroundImage = `url('${data.img}')`;
+            document.getElementById('center-grade').innerText = data.grade;
+            document.getElementById('center-name').innerText = data.name;
+            document.getElementById('center-location').innerText = centerId === 'center1' ? '서울 강남구' : '서울 서초구';
+            
+            const list = document.getElementById('center-advantages');
+            list.innerHTML = '';
+            data.advantages.forEach(adv => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-4';
+                li.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center flex-shrink-0"><i class="fas fa-check"></i></div><div><h5 class="font-bold text-slate-800 text-lg">${adv}</h5><p class="text-slate-500 text-sm">전문적인 서비스를 제공합니다.</p></div>`;
+                list.appendChild(li);
+            });
+            showSection('center-detail');
+        }
+
+        // --- 이미지 슬라이더 ---
+        const heroImages = [
+            'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
+            'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
+            'https://images.unsplash.com/photo-1516307365426-bea591f05011?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+        ];
+        let imgIndex = 0;
+        setInterval(() => {
+            imgIndex = (imgIndex + 1) % heroImages.length;
+            const slider = document.getElementById('hero-slider');
+            const div = document.createElement('div');
+            div.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-1000 opacity-0';
+            div.style.backgroundImage = `url('${heroImages[imgIndex]}')`;
+            slider.appendChild(div);
+            void div.offsetWidth; 
+            div.classList.remove('opacity-0');
+            setTimeout(() => { if(slider.children.length > 1) slider.removeChild(slider.children[0]); }, 1000);
+        }, 5000);
+    </script>
+</body>
+</html>
